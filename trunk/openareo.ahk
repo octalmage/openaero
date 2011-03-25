@@ -22,6 +22,9 @@ Win+`:		Move active window to fill the current monitor.
 
 
 */
+SysGet, MonitorWorkArea, MonitorWorkArea
+
+detecthiddenwindows, on
 CoordMode, Mouse , Screen
 settimer, mousewatch, 10
 
@@ -106,6 +109,61 @@ winmove,A,, %ww2%,0,%ww%, %A_ScreenHeight%
 }
 return
 
+
+
+
+splash:
+
+
+SysGet, MonitorWorkArea, MonitorWorkArea
+
+	splashimage,shade2243324.jpg,hide CW1589FF b2,,,SplashImage
+	WinSet, Transparent, 85 ,SplashImage
+	if mode=1
+		winmove,SplashImage,,0, 0, %ww%, %MonitorWorkAreabottom% 
+	else if mode=3
+	{
+		if (mousex>a_screenwidth)
+			winmove,SplashImage,, %a_screenwidth%,0,%a_screenwidth%, %MonitorWorkAreabottom%
+		else
+			winmove,SplashImage,, 0,0,%a_screenwidth%, %MonitorWorkAreabottom%
+	}
+	else if mode=2
+		winmove,SplashImage,, %ww2%,0,%ww%, %MonitorWorkAreabottom%
+		
+		
+	SplashImage, Show, b2,,, SplashImage
+	splash=1
+return
+
+setmode:
+fullcheck:=VirtualScreenWidth-sides
+	mode=
+	if (mousex<sides)
+		mode=1
+	else if (mousex>fullcheck)
+		mode=2
+	else if (mousey<sides)
+		mode=3
+
+return
+
+splashoff:
+	splashimage,off
+				splash=0
+return
+
+isdragging()
+{
+ MouseGetPos, x, y, hwnd
+		SendMessage, 0x84, 0, (x&0xFFFF) | (y&0xFFFF) << 16,, ahk_id %hwnd%
+		RegExMatch("ERROR TRANSPARENT NOWHERE CLIENT CAPTION SYSMENU SIZE MENU HSCROLL VSCROLL MINBUTTON MAXBUTTON LEFT RIGHT TOP TOPLEFT TOPRIGHT BOTTOM BOTTOMLEFT BOTTOMRIGHT BORDER OBJECT CLOSE HELP", "(?:\w+\s+){" . ErrorLevel+2&0xFFFFFFFF . "}(?<AREA>\w+\b)", HT)
+		if htarea!=CAPTION
+			Return 0
+		else
+			return 1
+}
+
 mousewatch:
 if	(GetKeyState("lbutton"))
 {
@@ -113,11 +171,8 @@ if	(GetKeyState("lbutton"))
 	check:=winstatus%winid%
 	if check=1
 	{
-		 MouseGetPos, x, y, hwnd
-		SendMessage, 0x84, 0, (x&0xFFFF) | (y&0xFFFF) << 16,, ahk_id %hwnd%
-		RegExMatch("ERROR TRANSPARENT NOWHERE CLIENT CAPTION SYSMENU SIZE MENU HSCROLL VSCROLL MINBUTTON MAXBUTTON LEFT RIGHT TOP TOPLEFT TOPRIGHT BOTTOM BOTTOMLEFT BOTTOMRIGHT BORDER OBJECT CLOSE HELP", "(?:\w+\s+){" . ErrorLevel+2&0xFFFFFFFF . "}(?<AREA>\w+\b)", HT)
-		if htarea!=CAPTION
-			Return
+		if isdragging()
+		{
 		MouseGetPos,_x,_y
 
 			newwinw:=winw%winid%
@@ -126,45 +181,81 @@ if	(GetKeyState("lbutton"))
 
 			winmove,ahk_id %winid%,, %newwinx%,,%newwinw%, %newwinh%
 			winstatus%winid%=0
-	
+		}
 		return
 	}
-	fullcheck:=VirtualScreenWidth-sides
 	
-	
-	if (mousex<sides or mousex>fullcheck or mousey<sides)
+
+	gosub setmode
+	if not isdragging()
 	{
-		;WinSet, alwaysontop, on , ahk_id %winid%
-		gui, -caption +toolwindow
-		gui, color,blue
-		;gui,show,x0 y0 w%ww% h%A_ScreenHeight%
-		;WinSet, Transparent, 150 
-		sendinput {lbutton down}
+		return
+	}
+	if mode
+	{
+	WinSet, alwaysontop, on , ahk_id %winid%
+
+
+	
+	  
+	  
+		WinGetPos ,thiswinx , thiswiny, thiswinw, thiswinh, ahk_id %winid%
+		mousegetpos, mousex, mousey
+		;	gui,show,x0 y0 w%ww% h%A_ScreenHeight%
+	
+	
+		winmove,ahk_id %winid%,, %thiswinx%,%thiswiny%
+		;mousemove,%mousex%,%mousey%
+		;sendinput {lbutton down}
 		loop
 		{
+			MouseGetPos, mousex, mousey
+			if   (mousex<sides or mousex>fullcheck or mousey<10)
+			{
+				if not splash
+				{
+					gosub setmode
+					gosub splash
+				}
+			}
+			else
+			{
+				gosub splashoff
+			}
+		
+			
+			
+			
 			if	not GetKeyState("lbutton")
 			{	
 				MouseGetPos, mousex, mousey
-				if (mousex<sides or mousex>fullcheck or mousey<10)
+				gosub setmode
+				if mode
 				{
-					send {lbutton up}
+					
 					WinGetPos ,thiswinx , , thiswinw, thiswinh, ahk_id %winid%
 					winstatus%winid%=1
 					winw%winid%=%thiswinw%
 					winh%winid%=%thiswinh%
 					if (mousex>fullcheck)
 					{
-						winmove,ahk_id %winid%,, %ww2%,0,%ww%, %A_ScreenHeight%
+						gosub splashoff
+						winmove,ahk_id %winid%,, %ww2%,0,%ww%, %MonitorWorkAreabottom%
 					}
 					else if (mousey<10)
 					{
+						gosub splashoff
 						if (mousex>a_screenwidth)
-							winmove,ahk_id %winid%,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
+							winmove,ahk_id %winid%,, %a_screenwidth%,0,%a_screenwidth%, %MonitorWorkAreabottom%
 						else
-							winmove,ahk_id %winid%,, 0,0,%a_screenwidth%, %A_ScreenHeight%
+							winmove,ahk_id %winid%,, 0,0,%a_screenwidth%, %MonitorWorkAreabottom%
 					}
 					else
-						winmove,ahk_id %winid%,, 0,0,%ww%, %A_ScreenHeight%
+					{
+						gosub splashoff
+						winmove,ahk_id %winid%,, 0,0,%ww%, %MonitorWorkAreabottom%
+					}
+						
 					check:=winstatus%winid%
 		
 					;mww:=ww/2
@@ -179,9 +270,13 @@ if	(GetKeyState("lbutton"))
 			}
 
 		}
-		;gui,destroy
-		WinSet, alwaysontop, off , ahk_id %winid%
+	
+		gui,destroy
+	WinSet, alwaysontop, off, ahk_id %winid%
+	     gosub splashoff
 	}
+	
+		
 }
 return
 
