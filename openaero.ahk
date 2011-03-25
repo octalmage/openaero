@@ -1,6 +1,6 @@
 /*
 
-Octal's Multi-Monitor Script.
+openAero
 
 I made this script to model the window management in windows 7 at work when I have to use windows xp.
 
@@ -27,7 +27,7 @@ SysGet, MonitorWorkArea, MonitorWorkArea
 detecthiddenwindows, on
 CoordMode, Mouse , Screen
 settimer, mousewatch, 10
-
+#singleinstance, force
 
 ww:=a_screenwidth/2
 ww2:=(a_screenwidth/2)+a_screenwidth
@@ -37,6 +37,31 @@ SysGet, VirtualScreenHeight, 79
 
 
 sides=10
+
+
+
+
+
+menu, tray, NoStandard
+menu, tray, add, About, about
+menu, tray, add ; separator
+menu,tray,add,Exit,cleanup
+
+
+
+return
+
+cleanup:
+exitapp
+
+about:
+MsgBox , , About, openAero v0.1`nBy: Jason Stallings`ncode.google.com/p/openaero
+return
+
+
+
+return
+
 
 
 
@@ -124,7 +149,7 @@ SysGet, MonitorWorkArea, MonitorWorkArea
 	else if mode=3
 	{
 		if (mousex>a_screenwidth)
-			winmove,SplashImage,, %a_screenwidth%,0,%a_screenwidth%, %MonitorWorkAreabottom%
+			winmove,SplashImage,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
 		else
 			winmove,SplashImage,, 0,0,%a_screenwidth%, %MonitorWorkAreabottom%
 	}
@@ -246,7 +271,7 @@ if	(GetKeyState("lbutton"))
 					{
 						gosub splashoff
 						if (mousex>a_screenwidth)
-							winmove,ahk_id %winid%,, %a_screenwidth%,0,%a_screenwidth%, %MonitorWorkAreabottom%
+							winmove,ahk_id %winid%,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
 						else
 							winmove,ahk_id %winid%,, 0,0,%a_screenwidth%, %MonitorWorkAreabottom%
 					}
