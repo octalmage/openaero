@@ -29,12 +29,16 @@ CoordMode, Mouse , Screen
 settimer, mousewatch, 10
 #singleinstance, force
 
-ww:=a_screenwidth/2
-ww2:=(a_screenwidth/2)+a_screenwidth
+
 
 SysGet, VirtualScreenWidth, 78
 SysGet, VirtualScreenHeight, 79
+sysget, MonitorCount, MonitorCount
 
+
+ww:=a_screenwidth/2
+monitorcount--
+ww2:=(a_screenwidth/2)+(a_screenwidth*MonitorCount)
 
 sides=10
 
