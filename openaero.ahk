@@ -26,7 +26,7 @@ SysGet, MonitorWorkArea, MonitorWorkArea
 
 detecthiddenwindows, on
 CoordMode, Mouse , Screen
-settimer, mousewatch, 10
+
 #singleinstance, force
 
 
@@ -45,12 +45,13 @@ sides=10
 
 
 
-
+menu, tray,icon,logo.ico
 menu, tray, NoStandard
 menu, tray, add, About, about
 menu, tray, add ; separator
 menu,tray,add,Exit,cleanup
 
+settimer, mousewatch, 10
 
 
 return
@@ -305,7 +306,36 @@ if	(GetKeyState("lbutton"))
 	     gosub splashoff
 	}
 	
-		
 }
 return
 
+
+
+~*lbutton::
+	if not isdragging()
+		return
+		
+		
+	MouseGetPos, shakex, shakey
+	oldshakex=%shakex%
+	oldshakey=%shakey%
+	loop
+	{
+		if	not GetKeyState("lbutton")
+			return
+	
+	if (oldshakex>shakex)
+		oldshakex:=oldshakex-shakex
+	else
+		oldshakex:=oldshakex+shakex
+	
+	tooltip, %oldshakex%
+		MouseGetPos, shakex, shakey
+		oldshakex=%shakex%
+		sleep 500
+	}
+	
+
+
+
+return
