@@ -47,6 +47,7 @@ sides=10
 
 
 menu, tray, NoStandard
+menu,tray,icon,logo.ico
 menu, tray, add, About, about
 menu, tray, add ; separator
 menu,tray,add,Exit,cleanup
@@ -64,11 +65,8 @@ return
 
 
 
-return
 
-
-
-
+/*
 #1::
 winmove,A,, 0,0,%ww%, %A_ScreenHeight%
 return
@@ -85,21 +83,13 @@ return
 #4::
 winmove,A,, %ww2%,0,%ww%, %A_ScreenHeight%
 return
-
+*/
 #`::
 #up::
-WinGetPos , xx, , , , A
-if xx<%a_screenwidth%
-{
-winmove,A,, 0,0,%a_screenwidth%, %A_ScreenHeight%
-}
-else
-{
-winmove,A,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
-}
+winmax()
 return
 
-
+/*
 #q::
 
 winmove,A,, 0,0,%a_screenwidth%, %A_ScreenHeight%
@@ -109,42 +99,70 @@ return
 
 winmove,A,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
 return
-
+	*/
 
 
 
 #left::
-WinGetPos , xx, , , , A
-if xx<%a_screenwidth%
-{
-winmove,A,, 0,0,%ww%, %A_ScreenHeight%
-}
-else
-{
-winmove,A,, %a_screenwidth%,0,%ww%, %A_ScreenHeight%
-}
+winleft()
 return
 
 
 #right::
-WinGetPos , xx, , , , A
-if xx<%a_screenwidth%
-{
-winmove,A,, %ww%,0,%ww%, %A_ScreenHeight%
-}
-else
-{
-winmove,A,, %ww2%,0,%ww%, %A_ScreenHeight%
-}
+winright()
 return
 
+winright()
+{
+	global
 
+	WinGetPos , xx, , , , A
+	if xx<%a_screenwidth%
+	{
+		winmove,A,, %ww%,0,%ww%, %MonitorWorkAreaBottom%
+	}
+	else
+	{
+		winmove,A,, %ww2%,0,%ww%, %A_ScreenHeight%
+	}
+	return
+}
+
+winleft()
+{
+	global
+	WinGetPos , xx, , , , A
+	if xx<%a_screenwidth%
+	{
+		winmove,A,, 0,0,%ww%, %MonitorWorkAreaBottom%
+	}
+	else
+	{
+		winmove,A,, %a_screenwidth%,0,%ww%, %A_ScreenHeight%
+	}
+	return
+}
+
+winmax()
+{
+	global
+	WinGetPos , xx, , , , A
+	if xx<%a_screenwidth%
+	{
+		winmove,A,, 0,0,%a_screenwidth%, %MonitorWorkAreaBottom%
+	}
+	else
+	{
+		winmove,A,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
+	}
+	return
+}
 
 
 splash:
 
 
-SysGet, MonitorWorkArea, MonitorWorkArea
+	SysGet, MonitorWorkArea, MonitorWorkArea
 
 	splashimage,shade2243324.jpg,hide CW1589FF b2,,,SplashImage
 	WinSet, Transparent, 85 ,SplashImage
@@ -159,7 +177,6 @@ SysGet, MonitorWorkArea, MonitorWorkArea
 	}
 	else if mode=2
 		winmove,SplashImage,, %ww2%,0,%ww%, %MonitorWorkAreabottom%
-		
 		
 	SplashImage, Show, b2,,, SplashImage
 	splash=1
@@ -269,20 +286,16 @@ if	(GetKeyState("lbutton"))
 					if (mousex>fullcheck)
 					{
 						gosub splashoff
-						winmove,ahk_id %winid%,, %ww2%,0,%ww%, %MonitorWorkAreabottom%
+						winright()
 					}
 					else if (mousey<10)
 					{
 						gosub splashoff
-						if (mousex>a_screenwidth)
-							winmove,ahk_id %winid%,, %a_screenwidth%,0,%a_screenwidth%, %A_ScreenHeight%
-						else
-							winmove,ahk_id %winid%,, 0,0,%a_screenwidth%, %MonitorWorkAreabottom%
+						winmax()
 					}
 					else
 					{
-						gosub splashoff
-						winmove,ahk_id %winid%,, 0,0,%ww%, %MonitorWorkAreabottom%
+						winleft()
 					}
 						
 					check:=winstatus%winid%
