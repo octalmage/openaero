@@ -310,31 +310,9 @@ if	(GetKeyState("lbutton"))
 return
 
 
-
+;Shake code. Goes here. May need to add this in to the above sub.
 ~*lbutton::
-	if not isdragging()
-		return
-		
-		
-	MouseGetPos, shakex, shakey
-	oldshakex=%shakex%
-	oldshakey=%shakey%
-	loop
-	{
-		if	not GetKeyState("lbutton")
-			return
-	
-	if (oldshakex>shakex)
-		oldshakex:=oldshakex-shakex
-	else
-		oldshakex:=oldshakex+shakex
-	
-	tooltip, %oldshakex%
-		MouseGetPos, shakex, shakey
-		oldshakex=%shakex%
-		sleep 500
-	}
-	
+
 
 
 
