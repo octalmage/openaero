@@ -211,9 +211,21 @@ isdragging()
 }
 
 mousewatch:
+	while not isdragging()
+	{
+	return
+	}
+
+
 if	(GetKeyState("lbutton"))
 {
 	MouseGetPos, mousex, mousey, winid
+	winget,minmax,minmax, ahk_id %winid%
+	if minmax=1
+		return
+	WinGetClass, thisclass ,  ahk_id %winid%
+	if thisclass=Shell_TrayWnd
+		return
 	check:=winstatus%winid%
 	if check=1
 	{
@@ -230,26 +242,14 @@ if	(GetKeyState("lbutton"))
 		}
 		return
 	}
-	
-
 	gosub setmode
-	if not isdragging()
-	{
-		return
-	}
+
 	if mode
 	{
-	WinSet, alwaysontop, on , ahk_id %winid%
-
-
-	
-	  
-	  
+		WinSet, alwaysontop, on , ahk_id %winid%
 		WinGetPos ,thiswinx , thiswiny, thiswinw, thiswinh, ahk_id %winid%
 		mousegetpos, mousex, mousey
 		;	gui,show,x0 y0 w%ww% h%A_ScreenHeight%
-	
-	
 		winmove,ahk_id %winid%,, %thiswinx%,%thiswiny%
 		;mousemove,%mousex%,%mousey%
 		;sendinput {lbutton down}
@@ -268,10 +268,6 @@ if	(GetKeyState("lbutton"))
 			{
 				gosub splashoff
 			}
-		
-			
-			
-			
 			if	not GetKeyState("lbutton")
 			{	
 				MouseGetPos, mousex, mousey
@@ -312,13 +308,10 @@ if	(GetKeyState("lbutton"))
 			}
 
 		}
-	
 		gui,destroy
-	WinSet, alwaysontop, off, ahk_id %winid%
-	     gosub splashoff
+		WinSet, alwaysontop, off, ahk_id %winid%
+	    gosub splashoff
 	}
-	
-		
 }
 return
 
