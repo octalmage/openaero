@@ -43,6 +43,7 @@ ww2:=(a_screenwidth/2)+(a_screenwidth*MonitorCount)
 sides=10
 
 
+fullcheck:=VirtualScreenWidth-sides
 
 
 
@@ -183,7 +184,7 @@ splash:
 return
 
 setmode:
-fullcheck:=VirtualScreenWidth-sides
+
 	mode=
 	if (mousex<sides)
 		mode=1
@@ -314,4 +315,26 @@ if	(GetKeyState("lbutton"))
 	}
 }
 return
+
+
+
+
+~ctrl::
+
+	Confine(1,0,0,a_screenwidth,a_screenheight)
+	fullcheck:=A_screenwidth-sides
+
+keywait, ctrl
+  Confine(0,0,0,0,0)
+fullcheck:=VirtualScreenWidth-sides
+
+return
+
+
+
+
+Confine(C,X1,Y1,X2,Y2) { ; http://www.autohotkey.com/forum/viewtopic.php?p=293413#293413
+  VarSetCapacity(R,16,0),NumPut(X1,&R+0),NumPut(Y1,&R+4),NumPut(X2,&R+8),NumPut(Y2,&R+12)
+  Return C ? DllCall("ClipCursor",UInt,&R) : DllCall("ClipCursor")
+}
 
