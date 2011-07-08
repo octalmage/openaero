@@ -177,8 +177,18 @@ splash:
 			winmove,SplashImage,, 0,0,%a_screenwidth%, %MonitorWorkAreabottom%
 	}
 	else if mode=2
-		winmove,SplashImage,, %ww2%,0,%ww%, %MonitorWorkAreabottom%
+	{
+	if (fullcheck>a_screenwidth)
+	{
+	winmove,SplashImage,, %ww2%,0,%ww%, %MonitorWorkAreabottom%
+	}
+	else
+	{
+	winmove,SplashImage,, %ww%,0,%ww%, %MonitorWorkAreabottom%
+	}
 		
+		
+		}
 	SplashImage, Show, b2,,, SplashImage
 	splash=1
 return
@@ -200,16 +210,6 @@ splashoff:
 				splash=0
 return
 
-isdragging()
-{
- MouseGetPos, x, y, hwnd
-		SendMessage, 0x84, 0, (x&0xFFFF) | (y&0xFFFF) << 16,, ahk_id %hwnd%
-		RegExMatch("ERROR TRANSPARENT NOWHERE CLIENT CAPTION SYSMENU SIZE MENU HSCROLL VSCROLL MINBUTTON MAXBUTTON LEFT RIGHT TOP TOPLEFT TOPRIGHT BOTTOM BOTTOMLEFT BOTTOMRIGHT BORDER OBJECT CLOSE HELP", "(?:\w+\s+){" . ErrorLevel+2&0xFFFFFFFF . "}(?<AREA>\w+\b)", HT)
-		if htarea!=CAPTION
-			Return 0
-		else
-			return 1
-}
 
 mousewatch:
 	while not isdragging()
@@ -338,3 +338,14 @@ Confine(C,X1,Y1,X2,Y2) { ; http://www.autohotkey.com/forum/viewtopic.php?p=29341
   Return C ? DllCall("ClipCursor",UInt,&R) : DllCall("ClipCursor")
 }
 
+
+isdragging()
+{
+ MouseGetPos, x, y, hwnd
+		SendMessage, 0x84, 0, (x&0xFFFF) | (y&0xFFFF) << 16,, ahk_id %hwnd%
+		RegExMatch("ERROR TRANSPARENT NOWHERE CLIENT CAPTION SYSMENU SIZE MENU HSCROLL VSCROLL MINBUTTON MAXBUTTON LEFT RIGHT TOP TOPLEFT TOPRIGHT BOTTOM BOTTOMLEFT BOTTOMRIGHT BORDER OBJECT CLOSE HELP", "(?:\w+\s+){" . ErrorLevel+2&0xFFFFFFFF . "}(?<AREA>\w+\b)", HT)
+		if htarea!=CAPTION
+			Return 0
+		else
+			return 1
+}
